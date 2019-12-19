@@ -52,8 +52,8 @@ function hexToBytes(hex) {
     return bytes;
 }
 
-// intToBytes converts int to bytes array
-function intToBytes(int) {
+// int64ToBytes converts int to bytes array
+function int64ToBytes(int) {
     var bytes = [];
     var i = 8;
     do {
@@ -63,11 +63,38 @@ function intToBytes(int) {
     return bytes;
 }
 
-// message created signed content from previous and round
-function message(prev, round) {
-  var b_prev = hexToBytes(prev);
-  var b_round = intToBytes(round);
-  return b_round.concat(b_prev);
+// length of the message to pass to verification routine
+const LENGTH_MSG = 32; 
+
+// sha256 function used to hash input to bls verify / sign
+let sha256;
+if (typeof window == "object" && "crypto" in window) {
+    sha256 = async (message) => {
+        const buffer = await window.crypto.subtle.digest("SHA-256", message.buffer);
+        return new Uint8Array(buffer);
+    };
+}
+else if (typeof process === "object" && ("node" in process.versions || process.browser)) {
+    const { createHash } = require("crypto");
+    sha256 = async (message) => {
+        const hash = createHash("sha256");
+        hash.update(message);
+        return Uint8Array.from(hash.digest());
+    };
+}
+else {
+    throw new Error("The environment doesn't have sha256 function");
+}
+
+// message returns the message to verify / signed by drand nodes given the round
+// number and the previous hashed randomness.
+async function message(prev, round) {
+    const message = new Uint8Array(LENGTH_MSG);
+    const bprev = hexToBytes(prev);
+    const bround = int64ToBytes(round);
+    message.set(bround);
+    message.set(bprev, bround.length);
+    return sha256(message);
 }
 
 // verifyDrand formats previous and round into the signed message, verifies the
@@ -98,3 +125,5 @@ function sha512(str) {
     return Array.prototype.map.call(new Uint8Array(buf), x=>(('00'+x.toString(16)).slice(-2))).join('');
   });
 }
+
+module.exports.message = message;

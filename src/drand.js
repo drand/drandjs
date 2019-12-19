@@ -87,3 +87,5 @@ var fetchAndVerify = function(identity, distkey, round) {
     });
   }
 }
+
+exports.fetchAndVerify = fetchAndVerify

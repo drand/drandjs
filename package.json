@@ -1,0 +1,29 @@
+{
+  "name": "drandjs",
+  "version": "1.0.0",
+  "description": "Javascript library to interact with drand nodes",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drand/drandjs.git"
+  },
+  "keywords": [
+    "drand",
+    "randomness"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/drand/drandjs/issues"
+  },
+  "homepage": "https://github.com/drand/drandjs#readme",
+  "dependencies": {
+    "noble-bls12-381": "^0.2.4"
+  }
+}
