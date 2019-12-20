@@ -1,3 +1,8 @@
+// length of the message to pass to verification routine
+const LENGTH_MSG = 32; 
+const DRAND_DOMAIN = new Uint8Array([1,9,6,9,9,6,9,1])
+const bls = require('noble-bls12-381');
+
 var defaultDistKey = "";
 var latestRound = -1;
 
@@ -63,8 +68,25 @@ function int64ToBytes(int) {
     return bytes;
 }
 
-// length of the message to pass to verification routine
-const LENGTH_MSG = 32; 
+// message returns the message to verify / signed by drand nodes given the round
+// number and the previous hashed randomness.
+async function message(prev, round) {
+    const message = new Uint8Array(LENGTH_MSG + 8);
+    const bprev = hexToBytes(prev);
+    const bround = int64ToBytes(round);
+    message.set(bround);
+    message.set(bprev, bround.length);
+    return sha256(message);
+}
+
+// verifyDrand returns a Promise that returns true if the signature is correct
+// and false otherwise. It formats previous and round into the signed message,
+// verifies the signature against the distributed key and checks that the
+// randomness hash matches
+async function verifyDrand(previous, round, signature, distkey) {
+    return message(previous, round)
+        .then(msg => bls.verify(msg, distkey, signature, DRAND_DOMAIN));
+}
 
 // sha256 function used to hash input to bls verify / sign
 let sha256;
@@ -86,39 +108,6 @@ else {
     throw new Error("The environment doesn't have sha256 function");
 }
 
-// message returns the message to verify / signed by drand nodes given the round
-// number and the previous hashed randomness.
-async function message(prev, round) {
-    const message = new Uint8Array(LENGTH_MSG);
-    const bprev = hexToBytes(prev);
-    const bround = int64ToBytes(round);
-    message.set(bround);
-    message.set(bprev, bround.length);
-    return sha256(message);
-}
-
-// verifyDrand formats previous and round into the signed message, verifies the
-// signature against the distributed key and checks that the randomness hash
-// matches
-async function verifyDrand(previous, signature, randomness, round, distkey) {
-  try {
-    var msg = message(previous, round);
-    var p = new kyber.pairing.point.BN256G2Point();
-    p.unmarshalBinary(hexToBytes(distkey));
-    var sig = hexToBytes(signature);
-    var ver_sig = kyber.sign.bls.verify(msg, p, sig);
-    var ver_rand = false;
-    await sha512(new Uint8Array(sig)).then(freshRand => {
-      if (freshRand === randomness) {
-        ver_rand = true;
-      }
-    });
-    return ver_rand && ver_sig;
-  } catch (e) {
-    console.error('Could not verify:', e);
-    return false;
-  }
-}
 
 function sha512(str) {
   return crypto.subtle.digest("SHA-512", str).then(buf => {
@@ -127,3 +116,4 @@ function sha512(str) {
 }
 
 module.exports.message = message;
+module.exports.verifyDrand = verifyDrand;
