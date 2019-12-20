@@ -25,5 +25,8 @@
   "homepage": "https://github.com/drand/drandjs#readme",
   "dependencies": {
     "noble-bls12-381": "^0.2.4"
+  },
+  "devDependencies": {
+    "mocha": "^6.2.2"
   }
 }

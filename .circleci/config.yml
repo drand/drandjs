@@ -35,5 +35,6 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
+      - run: npm install mocha
       # run tests!
       - run: npm test
