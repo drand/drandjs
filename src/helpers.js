@@ -71,9 +71,9 @@ function int64ToBytes(int) {
 // message returns the message to verify / signed by drand nodes given the round
 // number and the previous hashed randomness.
 async function message(prev, round) {
-    const message = new Uint8Array(LENGTH_MSG + 8);
     const bprev = hexToBytes(prev);
     const bround = int64ToBytes(round);
+    const message = new Uint8Array(bprev.length + bround.length);
     message.set(bround);
     message.set(bprev, bround.length);
     return sha256(message);
