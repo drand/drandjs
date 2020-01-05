@@ -6,8 +6,6 @@ const bls = require('@nikkolasg/noble-bls12-381');
 const defaultDistKey = "";
 const latestRound = -1;
 
-exports.defaultDistKey = defaultDistKey;
-
 // fetchLatest fetches the latest randomness from the node described by identity
 function fetchLatest(identity) {
   var fullPath = identity.Address + "/api/public";
@@ -120,3 +118,5 @@ function sha512(str) {
 
 module.exports.message = message;
 module.exports.verifyDrand = verifyDrand;
+module.exports.defaultDistKey = defaultDistKey;
+module.exports.latestRound = latestRound;
