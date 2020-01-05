@@ -17,6 +17,8 @@ function fetchLatest(identity) {
   return fetch(fullPath).then(resp => Promise.resolve(resp.json()));
 }
 
+module.exports.fetchLatest = fetchLatest;
+
 // fetchRound fetches the randomness at given round
 function fetchRound(identity, round) {
   var fullPath = identity.Address + "/api/public/" + round;
@@ -27,6 +29,8 @@ function fetchRound(identity, round) {
   }
   return fetch(fullPath).then(resp => Promise.resolve(resp.json()));
 }
+
+module.exports.fetchRound = fetchRound;
 
 // fetchKey fetches the public key
 function fetchKey(identity) {
@@ -39,6 +43,8 @@ function fetchKey(identity) {
   return fetch(fullPath).then(resp => Promise.resolve(resp.json()));
 }
 
+module.exports.fetchKey = fetchKey;
+
 // fetchGroup fetches the group file
 function fetchGroup(identity) {
   var fullPath = identity.Address + "/api/info/group";
@@ -49,6 +55,8 @@ function fetchGroup(identity) {
   }
   return fetch(fullPath).then(resp => Promise.resolve(resp.json()));
 }
+
+module.exports.fetchGroup = fetchGroup;
 
 // hexToBytes converts hex string to bytes array
 function hexToBytes(hex) {

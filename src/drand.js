@@ -94,3 +94,7 @@ module.exports.defaultDistKey = helpers.defaultDistKey;
 module.exports.latestRound = helpers.latestRound;
 module.exports.sha256 = helpers.sha256;
 module.exports.message = helpers.message;
+module.exports.fetchGroup = helpers.fetchGroup;
+module.exports.fetchKey = helpers.fetchKey;
+module.exports.fetchRound = helpers.fetchRound;
+module.exports.fetchLatest = helpers.fetchLatest;
