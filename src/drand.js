@@ -1,3 +1,4 @@
+const helpers = require('./helpers.js');
 /**
 * fetchAndVerify fetches needed information to check the randomness at a given round and verifies it
 * @param identity
@@ -7,7 +8,7 @@
 **/
 var fetchAndVerify = function(identity, distkey, round) {
   var previous = 0; var signature = 0; var randomness = 0; var err = 0;
-  if (distkey === defaultDistKey) {
+  if (distkey === helpers.defaultDistKey) {
     //fetch the distkey as well
     return new Promise(function(resolve, reject) {
       fetchKey(identity).then(key => {
@@ -19,7 +20,7 @@ var fetchAndVerify = function(identity, distkey, round) {
             signature = rand.signature;
             randomness = rand.randomness;
             round = rand.round.toString();
-            if (verifyDrand(previous, signature, randomness, round, distkey)) {
+            if (helpers.verifyDrand(previous, signature, randomness, round, distkey)) {
               resolve({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
             } else {
               reject({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
@@ -31,7 +32,7 @@ var fetchAndVerify = function(identity, distkey, round) {
             previous = rand.previous;
             signature = rand.signature;
             randomness = rand.randomness;
-            if (verifyDrand(previous, signature, randomness, round, distkey)) {
+            if (helpers.verifyDrand(previous, signature, randomness, round, distkey)) {
               resolve({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
             } else {
               reject({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
@@ -58,7 +59,7 @@ var fetchAndVerify = function(identity, distkey, round) {
           signature = rand.signature;
           randomness = rand.randomness;
           round = rand.round.toString();
-          if (verifyDrand(previous, signature, randomness, round, distkey)) {
+          if (helpers.verifyDrand(previous, signature, randomness, round, distkey)) {
             resolve({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
           } else {
             reject({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
@@ -70,7 +71,7 @@ var fetchAndVerify = function(identity, distkey, round) {
           previous = rand.previous;
           signature = rand.signature;
           randomness = rand.randomness;
-          if (verifyDrand(previous, signature, randomness, round, distkey)) {
+          if (helpers.verifyDrand(previous, signature, randomness, round, distkey)) {
             resolve({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
           } else {
             reject({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
@@ -88,4 +89,8 @@ var fetchAndVerify = function(identity, distkey, round) {
   }
 }
 
-exports.fetchAndVerify = fetchAndVerify
+module.exports.fetchAndVerify = fetchAndVerify;
+module.exports.defaultDistKey = helpers.defaultDistKey;
+module.exports.latestRound = helpers.latestRound;
+module.exports.sha256 = helpers.sha256;
+module.exports.message = helpers.message;
