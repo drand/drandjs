@@ -1,12 +1,10 @@
 // length of the message to pass to verification routine
 const LENGTH_MSG = 32; 
 const DRAND_DOMAIN = new Uint8Array([1,9,6,9,9,6,9,1])
-const bls = require('noble-bls12-381');
+const bls = require('@nikkolasg/noble-bls12-381');
 
 const defaultDistKey = "";
 const latestRound = -1;
-
-
 
 // fetchLatest fetches the latest randomness from the node described by identity
 function fetchLatest(identity) {
@@ -107,6 +105,7 @@ else if (typeof process === "object" && ("node" in process.versions || process.b
     };
 }
 else {
+    console.log("hello hello");
     throw new Error("The environment doesn't have sha256 function");
 }
 
@@ -121,5 +120,3 @@ module.exports.message = message;
 module.exports.verifyDrand = verifyDrand;
 module.exports.defaultDistKey = defaultDistKey;
 module.exports.latestRound = latestRound;
-
-

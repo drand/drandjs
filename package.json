@@ -2,13 +2,13 @@
   "name": "drandjs",
   "version": "1.0.0",
   "description": "Javascript library to interact with drand nodes",
-  "main": "index.js",
+  "main": "drand.js",
   "directories": {
     "example": "example"
   },
   "scripts": {
     "test": "mocha",
-    "build": "browserify -t uglifyify src/drand.js -o dist/drandjs.js"
+    "build": "browserify src/drand.js --s drandjs -o dist/drandjs.js"
   },
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/drand/drandjs#readme",
   "dependencies": {
-    "noble-bls12-381": "^0.2.4"
+    "@nikkolasg/noble-bls12-381": "^0.2.4"
   },
   "devDependencies": {
     "browserify": "^16.5.0",

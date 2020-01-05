@@ -1,4 +1,4 @@
-compiled=./dist/drand.js
+compiled=./dist/drandjs.js
 
 compile:
-	@find ./javascript -type f -name "*.js" | xargs cat > $(compiled)
+	@find ./src -type f -name "*.js" | xargs cat > $(compiled)
