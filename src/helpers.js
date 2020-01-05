@@ -3,8 +3,8 @@ const LENGTH_MSG = 32;
 const DRAND_DOMAIN = new Uint8Array([1,9,6,9,9,6,9,1])
 const bls = require('noble-bls12-381');
 
-var defaultDistKey = "";
-var latestRound = -1;
+const defaultDistKey = "";
+const latestRound = -1;
 
 // fetchLatest fetches the latest randomness from the node described by identity
 function fetchLatest(identity) {
