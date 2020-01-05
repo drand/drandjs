@@ -23424,11 +23424,11 @@ var fetchAndVerify = function(identity, distkey, round) {
   if (distkey === helpers.defaultDistKey) {
     //fetch the distkey as well
     return new Promise(function(resolve, reject) {
-      fetchKey(identity).then(key => {
+      helpers.fetchKey(identity).then(key => {
         distkey = key.key;
-        if (round == latestRound) {
+        if (round == helpers.latestRound) {
           //use latest randomness
-          fetchLatest(identity).then(rand => {
+          helpers.fetchLatest(identity).then(rand => {
             previous = rand.previous;
             signature = rand.signature;
             randomness = rand.randomness;
@@ -23441,7 +23441,7 @@ var fetchAndVerify = function(identity, distkey, round) {
           }).catch(error => console.error('Could not fetch randomness:', error));
         } else {
           //fetch given round
-          fetchRound(identity, round).then(rand => {
+          helpers.fetchRound(identity, round).then(rand => {
             previous = rand.previous;
             signature = rand.signature;
             randomness = rand.randomness;
@@ -23480,7 +23480,7 @@ var fetchAndVerify = function(identity, distkey, round) {
         }).catch(error => console.error('Could not fetch randomness:', error));
       } else {
         //fetch given round
-        fetchRound(identity, round).then(rand => {
+        helpers.fetchRound(identity, round).then(rand => {
           previous = rand.previous;
           signature = rand.signature;
           randomness = rand.randomness;
