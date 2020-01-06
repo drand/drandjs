@@ -20,7 +20,7 @@ var fetchAndVerify = function(identity, distkey, round) {
             signature = rand.signature;
             randomness = rand.randomness;
             round = rand.round.toString();
-            if (helpers.verifyDrand(previous, signature, randomness, round, distkey)) {
+            if (helpers.verifyDrand(previous, round, signature, distkey)) {
               resolve({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
             } else {
               reject({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
@@ -32,7 +32,7 @@ var fetchAndVerify = function(identity, distkey, round) {
             previous = rand.previous;
             signature = rand.signature;
             randomness = rand.randomness;
-            if (helpers.verifyDrand(previous, signature, randomness, round, distkey)) {
+            if (helpers.verifyDrand(previous, round, signature, distkey)) {
               resolve({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
             } else {
               reject({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
@@ -59,7 +59,7 @@ var fetchAndVerify = function(identity, distkey, round) {
           signature = rand.signature;
           randomness = rand.randomness;
           round = rand.round.toString();
-          if (helpers.verifyDrand(previous, signature, randomness, round, distkey)) {
+          if (helpers.verifyDrand(previous, round, signature, distkey)) {
             resolve({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
           } else {
             reject({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
@@ -71,7 +71,7 @@ var fetchAndVerify = function(identity, distkey, round) {
           previous = rand.previous;
           signature = rand.signature;
           randomness = rand.randomness;
-          if (helpers.verifyDrand(previous, signature, randomness, round, distkey)) {
+          if (helpers.verifyDrand(previous, round, signature, distkey)) {
             resolve({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
           } else {
             reject({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
