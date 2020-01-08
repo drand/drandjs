@@ -748,7 +748,6 @@ class Point {
 exports.Point = Point;
 
 },{"./fp12":2}],7:[function(require,module,exports){
-(function (process){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fp_1 = require("./fp");
@@ -774,24 +773,13 @@ const POW_2_382 = POW_2_381 * 2n;
 const POW_2_383 = POW_2_382 * 2n;
 const PUBLIC_KEY_LENGTH = 48;
 let sha256;
-if (typeof window == "object" && "crypto" in window) {
-    sha256 = async (message) => {
-        const buffer = await window.crypto.subtle.digest("SHA-256", message.buffer);
-        return new Uint8Array(buffer);
-    };
-}
-else if (typeof process === "object" && "node" in process.versions) {
-    const req = require;
-    const { createHash } = req("crypto");
-    sha256 = async (message) => {
-        const hash = createHash("sha256");
-        hash.update(message);
-        return Uint8Array.from(hash.digest());
-    };
-}
-else {
-    throw new Error("The environment doesn't have sha256 function");
-}
+const req = require;
+const { createHash } = req("crypto");
+sha256 = async (message) => {
+    const hash = createHash("sha256");
+    hash.update(message);
+    return Uint8Array.from(hash.digest());
+};
 function fromHexBE(hex) {
     return BigInt(`0x${hex}`);
 }
@@ -865,12 +853,17 @@ function powMod(x, power, order) {
     }
     return res.value;
 }
-async function getXCoordinate(hash, domain) {
+async function getXCoordinateG2(hash, domain) {
     const xReconstructed = toBigInt(await sha256(concatBytes(hash, domain, "01")));
     const xImage = toBigInt(await sha256(concatBytes(hash, domain, "02")));
     return new fp2_1.Fp2(xReconstructed, xImage);
 }
-exports.getXCoordinate = getXCoordinate;
+exports.getXCoordinateG2 = getXCoordinateG2;
+async function getXCoordinateG1(hash, domain) {
+    const xReconstructed = toBigInt(await sha256(concatBytes(hash, domain, "01")));
+    return new fp_1.Fp(xReconstructed);
+}
+exports.getXCoordinateG1 = getXCoordinateG1;
 const POW_SUM = POW_2_383 + POW_2_382;
 function compressG1(point) {
     if (point.isEmpty()) {
@@ -961,7 +954,7 @@ function signatureToG2(signature) {
 }
 exports.signatureToG2 = signatureToG2;
 async function hashToG2(hash, domain) {
-    let xCoordinate = await getXCoordinate(hash, domain);
+    let xCoordinate = await getXCoordinateG2(hash, domain);
     let newResult = null;
     do {
         newResult = xCoordinate
@@ -977,8 +970,7 @@ async function hashToG2(hash, domain) {
 }
 exports.hashToG2 = hashToG2;
 
-}).call(this,require('_process'))
-},{"./fp":1,"./fp12":2,"./fp2":3,"./point":6,"_process":124}],8:[function(require,module,exports){
+},{"./fp":1,"./fp12":2,"./fp2":3,"./point":6}],8:[function(require,module,exports){
 var asn1 = exports;
 
 asn1.bignum = require('bn.js');
