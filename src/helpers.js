@@ -2,10 +2,10 @@
 const LENGTH_MSG = 32; 
 const DRAND_DOMAIN = new Uint8Array([1,9,6,9,9,6,9,2])
 const bls = require('@nikkolasg/noble-bls12-381');
-const ch = require("crypto").createHash;
+const crypto = require("crypto");
 
 let sha256 = async (message) => {
-    const hash = ch("sha256");
+    const hash = crypto.createHash("sha256");
     hash.update(message);
     const d = Uint8Array.from(hash.digest());
     return Promise.resolve(d);
