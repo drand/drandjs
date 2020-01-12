@@ -773,8 +773,7 @@ const POW_2_382 = POW_2_381 * 2n;
 const POW_2_383 = POW_2_382 * 2n;
 const PUBLIC_KEY_LENGTH = 48;
 let sha256;
-const req = require;
-const { createHash } = req("crypto");
+const { createHash } = require("crypto");
 sha256 = async (message) => {
     const hash = createHash("sha256");
     hash.update(message);
@@ -970,7 +969,7 @@ async function hashToG2(hash, domain) {
 }
 exports.hashToG2 = hashToG2;
 
-},{"./fp":1,"./fp12":2,"./fp2":3,"./point":6}],8:[function(require,module,exports){
+},{"./fp":1,"./fp12":2,"./fp2":3,"./point":6,"crypto":62}],8:[function(require,module,exports){
 var asn1 = exports;
 
 asn1.bignum = require('bn.js');
@@ -15478,49 +15477,37 @@ utils.intFromLE = intFromLE;
 
 },{"bn.js":23,"minimalistic-assert":111,"minimalistic-crypto-utils":112}],88:[function(require,module,exports){
 module.exports={
-  "_from": "elliptic@^6.0.0",
-  "_id": "elliptic@6.5.2",
-  "_inBundle": false,
-  "_integrity": "sha512-f4x70okzZbIQl/NSRLkI/+tteV/9WqL98zx+SQ69KbXxmVrmjwsNUPn/gYJJ0sHvEak24cZgHIPegRePAtA/xw==",
-  "_location": "/elliptic",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "range",
-    "registry": true,
-    "raw": "elliptic@^6.0.0",
-    "name": "elliptic",
-    "escapedName": "elliptic",
-    "rawSpec": "^6.0.0",
-    "saveSpec": null,
-    "fetchSpec": "^6.0.0"
-  },
-  "_requiredBy": [
-    "/browserify-sign",
-    "/create-ecdh"
+  "name": "elliptic",
+  "version": "6.5.2",
+  "description": "EC cryptography",
+  "main": "lib/elliptic.js",
+  "files": [
+    "lib"
   ],
-  "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.5.2.tgz",
-  "_shasum": "05c5678d7173c049d8ca433552224a495d0e3762",
-  "_spec": "elliptic@^6.0.0",
-  "_where": "/home/nalos/prog/drand/drandjs/node_modules/browserify-sign",
-  "author": {
-    "name": "Fedor Indutny",
-    "email": "fedor@indutny.com"
+  "scripts": {
+    "jscs": "jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js",
+    "jshint": "jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js",
+    "lint": "npm run jscs && npm run jshint",
+    "unit": "istanbul test _mocha --reporter=spec test/index.js",
+    "test": "npm run lint && npm run unit",
+    "version": "grunt dist && git add dist/"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:indutny/elliptic"
+  },
+  "keywords": [
+    "EC",
+    "Elliptic",
+    "curve",
+    "Cryptography"
+  ],
+  "author": "Fedor Indutny <fedor@indutny.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/indutny/elliptic/issues"
   },
-  "bundleDependencies": false,
-  "dependencies": {
-    "bn.js": "^4.4.0",
-    "brorand": "^1.0.1",
-    "hash.js": "^1.0.0",
-    "hmac-drbg": "^1.0.0",
-    "inherits": "^2.0.1",
-    "minimalistic-assert": "^1.0.0",
-    "minimalistic-crypto-utils": "^1.0.0"
-  },
-  "deprecated": false,
-  "description": "EC cryptography",
+  "homepage": "https://github.com/indutny/elliptic",
   "devDependencies": {
     "brfs": "^1.4.3",
     "coveralls": "^3.0.8",
@@ -15537,34 +15524,20 @@ module.exports={
     "jshint": "^2.10.3",
     "mocha": "^6.2.2"
   },
-  "files": [
-    "lib"
-  ],
-  "homepage": "https://github.com/indutny/elliptic",
-  "keywords": [
-    "EC",
-    "Elliptic",
-    "curve",
-    "Cryptography"
-  ],
-  "license": "MIT",
-  "main": "lib/elliptic.js",
-  "name": "elliptic",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/indutny/elliptic.git"
-  },
-  "scripts": {
-    "jscs": "jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js",
-    "jshint": "jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js",
-    "lint": "npm run jscs && npm run jshint",
-    "test": "npm run lint && npm run unit",
-    "unit": "istanbul test _mocha --reporter=spec test/index.js",
-    "version": "grunt dist && git add dist/"
-  },
-  "version": "6.5.2"
-}
+  "dependencies": {
+    "bn.js": "^4.4.0",
+    "brorand": "^1.0.1",
+    "hash.js": "^1.0.0",
+    "hmac-drbg": "^1.0.0",
+    "inherits": "^2.0.1",
+    "minimalistic-assert": "^1.0.0",
+    "minimalistic-crypto-utils": "^1.0.0"
+  }
 
+,"_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.5.2.tgz"
+,"_integrity": "sha512-f4x70okzZbIQl/NSRLkI/+tteV/9WqL98zx+SQ69KbXxmVrmjwsNUPn/gYJJ0sHvEak24cZgHIPegRePAtA/xw=="
+,"_from": "elliptic@6.5.2"
+}
 },{}],89:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -23577,13 +23550,12 @@ module.exports.fetchLatest = helpers.fetchLatest;
 const LENGTH_MSG = 32; 
 const DRAND_DOMAIN = new Uint8Array([1,9,6,9,9,6,9,2])
 const bls = require('@nikkolasg/noble-bls12-381');
-const ch = require("crypto").createHash;
+const crypto = require("crypto");
 
-let sha256 = async (message) => {
-    const hash = ch("sha256");
+let sha256 = (message) => {
+    const hash = crypto.createHash("sha256");
     hash.update(message);
-    const d = Uint8Array.from(hash.digest());
-    return Promise.resolve(d);
+    return Uint8Array.from(hash.digest());
 };
 
 
@@ -23667,7 +23639,7 @@ function toHexString(byteArray) {
 }
 // message returns the message to verify / signed by drand nodes given the round
 // number and the previous hashed randomness.
-async function message(prev, round) {
+function message(prev, round) {
     const bprev = hexToBytes(prev);
     const bround = int64ToBytes(round);
     const message = new Uint8Array(bprev.length + bround.length);
@@ -23681,8 +23653,9 @@ async function message(prev, round) {
 // verifies the signature against the distributed key and checks that the
 // randomness hash matches
 async function verifyDrand(previous, round, signature, distkey) {
-    return message(previous, round)
-        .then(msg => bls.verify(msg, distkey, signature, DRAND_DOMAIN));
+    const msg = message(previous, round);
+    // bls.verify return a promise that always resolve.
+    return bls.verify(msg, distkey, signature, DRAND_DOMAIN)
 }
 
 

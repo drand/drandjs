@@ -4,11 +4,10 @@ const DRAND_DOMAIN = new Uint8Array([1,9,6,9,9,6,9,2])
 const bls = require('@nikkolasg/noble-bls12-381');
 const crypto = require("crypto");
 
-let sha256 = async (message) => {
+let sha256 = (message) => {
     const hash = crypto.createHash("sha256");
     hash.update(message);
-    const d = Uint8Array.from(hash.digest());
-    return Promise.resolve(d);
+    return Uint8Array.from(hash.digest());
 };
 
 
@@ -92,7 +91,7 @@ function toHexString(byteArray) {
 }
 // message returns the message to verify / signed by drand nodes given the round
 // number and the previous hashed randomness.
-async function message(prev, round) {
+function message(prev, round) {
     const bprev = hexToBytes(prev);
     const bround = int64ToBytes(round);
     const message = new Uint8Array(bprev.length + bround.length);
@@ -106,8 +105,9 @@ async function message(prev, round) {
 // verifies the signature against the distributed key and checks that the
 // randomness hash matches
 async function verifyDrand(previous, round, signature, distkey) {
-    return message(previous, round)
-        .then(msg => bls.verify(msg, distkey, signature, DRAND_DOMAIN));
+    const msg = message(previous, round);
+    // bls.verify return a promise that always resolve.
+    return bls.verify(msg, distkey, signature, DRAND_DOMAIN)
 }
 
 
