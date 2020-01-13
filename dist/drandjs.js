@@ -23470,101 +23470,73 @@ exports.createContext = Script.createContext = function (context) {
 };
 
 },{}],163:[function(require,module,exports){
-const helpers = require('./helpers.js');
-/**
-* fetchAndVerify fetches needed information to check the randomness at a given round and verifies it
+const h = require('./helpers.js');
+const helpers = h;
+
+class InvalidVerification extends Error {
+    constructor(rand) {
+      // Maintenir dans la pile une trace adéquate de l'endroit où l'erreur a été déclenchée (disponible seulement en V8)
+      if(Error.captureStackTrace) {
+        Error.captureStackTrace(this, CustomError);
+      }
+      this.name = 'InvalidVerification';
+      // Informations de déboguage personnalisées
+      this.rand = rand;
+      this.date = new Date();
+    }
+
+    toString() {
+        return `Invalid verification for response ${this.rand}`;
+    }
+}
+/** 
+ * * fetchAndVerify fetches needed information to check the randomness at a
+ * given round and verifies the randomness. It returns a resolving promise in
+ * case of a valid randomness and throws an error otherwise. 
+ * The dist key can be ommited, it will be retrieved from the identity in that
+ * case and returned in the response. The round can be ommitted, it will use the
+ * latest round in that case and returned in the response.
 * @param identity
 * @param distkey
 * @param round
-* @return Promise with struct {round previous signature randomness} both on completion and error
+* @return Promise with struct {round previous signature randomness} on valid
+* signature
+* @throws Error in case of invalid signature or network error
 **/
-var fetchAndVerify = function(identity, distkey, round) {
-  var previous = 0; var signature = 0; var randomness = 0; var err = 0;
-  if (distkey === helpers.defaultDistKey) {
-    //fetch the distkey as well
-    return new Promise(function(resolve, reject) {
-      helpers.fetchKey(identity).then(key => {
-        distkey = key.key;
-        if (round == helpers.latestRound) {
-          //use latest randomness
-          helpers.fetchLatest(identity).then(rand => {
-            previous = rand.previous;
-            signature = rand.signature;
-            randomness = rand.randomness;
-            round = rand.round.toString();
-            if (helpers.verifyDrand(previous, round, signature, distkey)) {
-              resolve({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
-            } else {
-              reject({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
-            }
-          }).catch(error => console.error('Could not fetch randomness:', error));
-        } else {
-          //fetch given round
-          helpers.fetchRound(identity, round).then(rand => {
-            previous = rand.previous;
-            signature = rand.signature;
-            randomness = rand.randomness;
-            if (helpers.verifyDrand(previous, round, signature, distkey)) {
-              resolve({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
-            } else {
-              reject({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
-            }
-          }).catch(error => {
-            console.log(error);
-            if (error.name === 'SyntaxError') {
-              console.error('Could not fetch the round:', round);
-            } else {
-              console.error('Could not fetch randomness:', error);
-            }
-          });
-        }
-      }).catch(error => console.error('Could not fetch the distkey:', error));
-    });
-
-  } else {
-    //we use given distkey
-    return new Promise(function(resolve, reject) {
-      if (round == helpers.latestRound) {
-        //use latest randomness
-        fetchLatest(identity).then(rand => {
-          previous = rand.previous;
-          signature = rand.signature;
-          randomness = rand.randomness;
-          round = rand.round.toString();
-          if (helpers.verifyDrand(previous, round, signature, distkey)) {
-            resolve({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
-          } else {
-            reject({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
-          }
-        }).catch(error => console.error('Could not fetch randomness:', error));
-      } else {
+async function fetchAndVerify(identity, distkey = h.unknownKey, round = h.unknownRound) {
+    var rand = null;
+    if (round == h.unknownRound) {
+        // use latest randomness
+        console.log("fetchAndVerify will fetch for latest round");
+        rand = await h.fetchLatest(identity);
+    } else {
         //fetch given round
-        helpers.fetchRound(identity, round).then(rand => {
-          previous = rand.previous;
-          signature = rand.signature;
-          randomness = rand.randomness;
-          if (helpers.verifyDrand(previous, round, signature, distkey)) {
-            resolve({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
-          } else {
-            reject({"round":round, "previous":previous, "signature":signature, "randomness": randomness});
-          }
-        }).catch(error => {
-          console.log(error);
-          if (error.name === 'SyntaxError') {
-            console.error('Could not fetch the round:', round);
-          } else {
-            console.error('Could not fetch randomness:', error);
-          }
-        });
-      }
-    });
-  }
+        console.log("fetchAndVerify will fetch for round ", round);
+        rand = await h.fetchRound(identity, round);
+    }
+    rand.distkey = distkey;
+    if (distkey == h.unknownKey) {
+        const dk = await h.fetchKey(identity);
+        rand.distkey = dk.key;
+        console.log("fetchAndVerify: fetched distkey ",rand.distkey);
+    } 
+    console.log("fetchAndVerify: fetched and will now verify... ",rand);
+    const correct = await helpers.verify(rand.previous, 
+                rand.round, rand.signature, rand.distkey);
+
+    if (correct == true) {
+        return rand;
+    } else {
+        throw new InvalidVerification(rand);
+    }
 }
 
+module.exports.InvalidVerification = InvalidVerification;
 module.exports.fetchAndVerify = fetchAndVerify;
-module.exports.defaultDistKey = helpers.defaultDistKey;
-module.exports.latestRound = helpers.latestRound;
+module.exports.unknownKey = helpers.unknownKey;
+module.exports.unknownRound = helpers.unknownRound;
 module.exports.sha256 = helpers.sha256;
+module.exports.toHexString = helpers.toHexString;
 module.exports.message = helpers.message;
 module.exports.fetchGroup = helpers.fetchGroup;
 module.exports.fetchKey = helpers.fetchKey;
@@ -23585,8 +23557,19 @@ let sha256 = (message) => {
 };
 
 
-const defaultDistKey = "";
-const latestRound = -1;
+const unknownKey = "";
+const unknownRound = -1;
+
+// https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch
+function safeFetch(path) {
+    return fetch(path).then(resp =>  {
+      if (resp.ok) {
+        return resp.json()
+      } else {
+        return Promise.reject(`fetch error to ${fullPath}: resp.ok false: ${resp}`)
+      }
+  });
+}
 
 // fetchLatest fetches the latest randomness from the node described by identity
 function fetchLatest(identity) {
@@ -23596,7 +23579,7 @@ function fetchLatest(identity) {
   } else  {
     fullPath = "https://" + fullPath;
   }
-  return fetch(fullPath).then(resp => Promise.resolve(resp.json()));
+  return safeFetch(fullPath);
 }
 
 module.exports.fetchLatest = fetchLatest;
@@ -23609,7 +23592,7 @@ function fetchRound(identity, round) {
   } else  {
     fullPath = "https://" + fullPath;
   }
-  return fetch(fullPath).then(resp => Promise.resolve(resp.json()));
+  return safeFetch(fullPath);
 }
 
 module.exports.fetchRound = fetchRound;
@@ -23622,7 +23605,7 @@ function fetchKey(identity) {
   } else  {
     fullPath = "https://" + fullPath;
   }
-  return fetch(fullPath).then(resp => Promise.resolve(resp.json()));
+  return safeFetch(fullPath);
 }
 
 module.exports.fetchKey = fetchKey;
@@ -23635,7 +23618,7 @@ function fetchGroup(identity) {
   } else  {
     fullPath = "https://" + fullPath;
   }
-  return fetch(fullPath).then(resp => Promise.resolve(resp.json()));
+  return safeFetch(fullPath);
 }
 
 module.exports.fetchGroup = fetchGroup;
@@ -23678,7 +23661,7 @@ function message(prev, round) {
 // and false otherwise. It formats previous and round into the signed message,
 // verifies the signature against the distributed key and checks that the
 // randomness hash matches
-async function verifyDrand(previous, round, signature, distkey) {
+async function verify(previous, round, signature, distkey) {
     const msg = message(previous, round);
     // bls.verify return a promise that always resolve.
     return bls.verify(msg, distkey, signature, DRAND_DOMAIN)
@@ -23691,10 +23674,12 @@ function sha512(str) {
   });
 }
 
+module.exports.sha256 = sha256;
+module.exports.toHexString = toHexString;
 module.exports.message = message;
-module.exports.verifyDrand = verifyDrand;
-module.exports.defaultDistKey = defaultDistKey;
-module.exports.latestRound = latestRound;
+module.exports.verify = verify;
+module.exports.unknownKey = unknownKey;
+module.exports.unknownRound = unknownRound;
 
 },{"@nikkolasg/noble-bls12-381":5,"crypto":62}]},{},[163])(163)
 });
