@@ -37,6 +37,7 @@ async function fetchAndVerify(identity, distkey = h.unknownKey, round = h.unknow
         // use latest randomness
         console.log("fetchAndVerify will fetch for latest round");
         rand = await h.fetchLatest(identity);
+        round = rand.round;
     } else {
         //fetch given round
         console.log("fetchAndVerify will fetch for round ", round);
@@ -50,7 +51,7 @@ async function fetchAndVerify(identity, distkey = h.unknownKey, round = h.unknow
     } 
     console.log("fetchAndVerify: fetched and will now verify... ",rand);
     const correct = await helpers.verify(rand.previous, 
-                rand.round, rand.signature, rand.distkey);
+                round, rand.signature, rand.distkey);
 
     if (correct == true) {
         return rand;
