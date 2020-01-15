@@ -3,9 +3,10 @@ const helpers = h;
 
 class InvalidVerification extends Error {
     constructor(rand) {
+      super();
       // Maintenir dans la pile une trace adéquate de l'endroit où l'erreur a été déclenchée (disponible seulement en V8)
       if(Error.captureStackTrace) {
-        Error.captureStackTrace(this, CustomError);
+        Error.captureStackTrace(this, InvalidVerification);
       }
       this.name = 'InvalidVerification';
       // Informations de déboguage personnalisées
@@ -14,7 +15,7 @@ class InvalidVerification extends Error {
     }
 
     toString() {
-        return `Invalid verification for response ${this.rand}`;
+        return `Invalid verification for response ${JSON.stringify(this.rand)}`;
     }
 }
 /** 
