@@ -11,8 +11,19 @@ let sha256 = (message) => {
 };
 
 
-const defaultDistKey = "";
-const latestRound = -1;
+const unknownKey = "";
+const unknownRound = -1;
+
+// https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch
+function safeFetch(path) {
+    return fetch(path).then(resp =>  {
+      if (resp.ok) {
+        return resp.json()
+      } else {
+        return Promise.reject(`fetch error to ${fullPath}: resp.ok false: ${resp}`)
+      }
+  });
+}
 
 // fetchLatest fetches the latest randomness from the node described by identity
 function fetchLatest(identity) {
@@ -22,7 +33,7 @@ function fetchLatest(identity) {
   } else  {
     fullPath = "https://" + fullPath;
   }
-  return fetch(fullPath).then(resp => Promise.resolve(resp.json()));
+  return safeFetch(fullPath);
 }
 
 module.exports.fetchLatest = fetchLatest;
@@ -35,7 +46,7 @@ function fetchRound(identity, round) {
   } else  {
     fullPath = "https://" + fullPath;
   }
-  return fetch(fullPath).then(resp => Promise.resolve(resp.json()));
+  return safeFetch(fullPath);
 }
 
 module.exports.fetchRound = fetchRound;
@@ -48,7 +59,7 @@ function fetchKey(identity) {
   } else  {
     fullPath = "https://" + fullPath;
   }
-  return fetch(fullPath).then(resp => Promise.resolve(resp.json()));
+  return safeFetch(fullPath);
 }
 
 module.exports.fetchKey = fetchKey;
@@ -61,7 +72,7 @@ function fetchGroup(identity) {
   } else  {
     fullPath = "https://" + fullPath;
   }
-  return fetch(fullPath).then(resp => Promise.resolve(resp.json()));
+  return safeFetch(fullPath);
 }
 
 module.exports.fetchGroup = fetchGroup;
@@ -104,7 +115,7 @@ function message(prev, round) {
 // and false otherwise. It formats previous and round into the signed message,
 // verifies the signature against the distributed key and checks that the
 // randomness hash matches
-async function verifyDrand(previous, round, signature, distkey) {
+async function verify(previous, round, signature, distkey) {
     const msg = message(previous, round);
     // bls.verify return a promise that always resolve.
     return bls.verify(msg, distkey, signature, DRAND_DOMAIN)
@@ -117,7 +128,9 @@ function sha512(str) {
   });
 }
 
+module.exports.sha256 = sha256;
+module.exports.toHexString = toHexString;
 module.exports.message = message;
-module.exports.verifyDrand = verifyDrand;
-module.exports.defaultDistKey = defaultDistKey;
-module.exports.latestRound = latestRound;
+module.exports.verify = verify;
+module.exports.unknownKey = unknownKey;
+module.exports.unknownRound = unknownRound;
