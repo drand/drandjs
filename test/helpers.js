@@ -14,11 +14,11 @@ describe("Verification of drand data", function() {
     let test = JSON.parse(rawdata);
     console.log(test);
     it("should return true with a correct message", async function () {
-         const correct = await helpers.verify(test.Previous,test.Round, test.Signature, test.Public)
+         const correct = await helpers.verify(test.API.previous,test.API.round, test.API.signature, test.Public)
          assert.equal(true,correct);
     }).timeout(10000);
     it("should return false with a random message", async function() {
-        const correct = await helpers.verify("deadbeef",test.Round, test.Signature, test.Public)
+        const correct = await helpers.verify("deadbeef",test.API.round, test.API.signature, test.Public)
         assert.equal(false,correct);
     }).timeout(10000);
 });
