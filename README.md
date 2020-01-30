@@ -8,7 +8,7 @@ drandjs is a Javascript library able to communicate with a public [`drand`](http
 
 The simplest way to use drandjs is to import the script from *jsdelivr* as in the following:
 ```javascript
-<script src="https://cdn.jsdelivr.net/gh/PizzaWhisperer/drandjs/dist/drand.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/drand/drandjs/dist/drand.js"></script>
 ```
 
 **Compile from source**: To compile the sources into a single bundled Javascript file, you can run `make compile` to create the file `dist/drand.js` ready to be included in your application.
