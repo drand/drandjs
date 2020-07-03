@@ -3,6 +3,7 @@ const LENGTH_MSG = 32;
 const DRAND_DOMAIN = new Uint8Array([1,9,6,9,9,6,9,2])
 const bls = require('@nikkolasg/noble-bls12-381');
 const crypto = require("crypto");
+const fetch = require('node-fetch');
 
 let sha256 = (message) => {
     const hash = crypto.createHash("sha256");
@@ -14,20 +15,20 @@ let sha256 = (message) => {
 const unknownKey = "";
 const unknownRound = -1;
 
-// https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch
-function safeFetch(path) {
+// https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetchfunction safeFetch(path) {
+  function safeFetch(path) {
     return fetch(path).then(resp =>  {
       if (resp.ok) {
-        return resp.json()
+        return resp.json();
       } else {
-        return Promise.reject(`fetch error to ${fullPath}: resp.ok false: ${resp}`)
+        return Promise.reject(new Error(`fetch error to ${path}: resp.ok false: ${resp.status}`));
       }
   });
 }
 
 // fetchLatest fetches the latest randomness from the node described by identity
 function fetchLatest(identity) {
-  var fullPath = identity.Address + "/api/public";
+  var fullPath = identity.Address + "/public/latest";
   if (identity.TLS == false) {
     fullPath = "http://" + fullPath;
   } else  {
@@ -40,7 +41,7 @@ module.exports.fetchLatest = fetchLatest;
 
 // fetchRound fetches the randomness at given round
 function fetchRound(identity, round) {
-  var fullPath = identity.Address + "/api/public/" + round;
+  var fullPath = identity.Address + "/public/" + round;
   if (identity.TLS == false) {
     fullPath = "http://" + fullPath;
   } else  {
@@ -53,20 +54,14 @@ module.exports.fetchRound = fetchRound;
 
 // fetchKey fetches the public key
 function fetchKey(identity) {
-  var fullPath = identity.Address + "/api/info/distkey";
-  if (identity.TLS == false) {
-    fullPath = "http://" + fullPath;
-  } else  {
-    fullPath = "https://" + fullPath;
-  }
-  return safeFetch(fullPath);
+  return fetchInfo(identity).then(info => info.public_key);
 }
 
 module.exports.fetchKey = fetchKey;
 
-// fetchGroup fetches the group file
-function fetchGroup(identity) {
-  var fullPath = identity.Address + "/api/info/group";
+// fetchInfo fetches the chain info
+function fetchInfo(identity) {
+  var fullPath = identity.Address + "/info";
   if (identity.TLS == false) {
     fullPath = "http://" + fullPath;
   } else  {
@@ -75,7 +70,7 @@ function fetchGroup(identity) {
   return safeFetch(fullPath);
 }
 
-module.exports.fetchGroup = fetchGroup;
+module.exports.fetchInfo = fetchInfo;
 
 // hexToBytes converts hex string to bytes array
 function hexToBytes(hex) {
@@ -115,10 +110,10 @@ function message(prev, round) {
 // and false otherwise. It formats previous and round into the signed message,
 // verifies the signature against the distributed key and checks that the
 // randomness hash matches
-async function verify(previous, round, signature, distkey) {
+async function verify(previous, round, signature, publicKey) {
     const msg = message(previous, round);
     // bls.verify return a promise that always resolve.
-    return bls.verify(msg, distkey, signature, DRAND_DOMAIN)
+    return bls.verify(msg, publicKey, signature, DRAND_DOMAIN);
 }
 
 

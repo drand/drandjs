@@ -26,13 +26,13 @@ class InvalidVerification extends Error {
  * case and returned in the response. The round can be ommitted, it will use the
  * latest round in that case and returned in the response.
 * @param identity
-* @param distkey
+* @param publicKey
 * @param round
 * @return Promise with struct {round previous signature randomness} on valid
 * signature
 * @throws Error in case of invalid signature or network error
 **/
-async function fetchAndVerify(identity, distkey = h.unknownKey, round = h.unknownRound) {
+async function fetchAndVerify(identity, publicKey = h.unknownKey, round = h.unknownRound) {
     var rand = null;
     if (round == h.unknownRound) {
         // use latest randomness
@@ -44,15 +44,15 @@ async function fetchAndVerify(identity, distkey = h.unknownKey, round = h.unknow
         console.log("fetchAndVerify will fetch for round ", round);
         rand = await h.fetchRound(identity, round);
     }
-    rand.distkey = distkey;
-    if (distkey == h.unknownKey) {
-        const dk = await h.fetchKey(identity);
-        rand.distkey = dk.key;
-        console.log("fetchAndVerify: fetched distkey ",rand.distkey);
+    rand.public_key = publicKey;
+    if (publicKey == h.unknownKey) {
+        const pk = await h.fetchKey(identity);
+        rand.public_key = pk;
+        console.log("fetchAndVerify: fetched public_key ", rand.public_key);
     } 
-    console.log("fetchAndVerify: fetched and will now verify... ",rand);
-    const correct = await helpers.verify(rand.previous, 
-                round, rand.signature, rand.distkey);
+    console.log("fetchAndVerify: fetched and will now verify... ", rand);
+    const correct = await helpers.verify(rand.previous_signature, 
+                round, rand.signature, rand.public_key);
 
     if (correct == true) {
         return rand;
@@ -68,7 +68,7 @@ module.exports.unknownRound = helpers.unknownRound;
 module.exports.sha256 = helpers.sha256;
 module.exports.toHexString = helpers.toHexString;
 module.exports.message = helpers.message;
-module.exports.fetchGroup = helpers.fetchGroup;
+module.exports.fetchInfo = helpers.fetchInfo;
 module.exports.fetchKey = helpers.fetchKey;
 module.exports.fetchRound = helpers.fetchRound;
 module.exports.fetchLatest = helpers.fetchLatest;

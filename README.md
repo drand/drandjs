@@ -1,21 +1,23 @@
 # drandjs
 
-drandjs is a Javascript library able to communicate with a public [`drand`](https://github.com/dedis/drand) network. drandjs can fetch *public* randomness from a node or a group of nodes and verify it in the browser. drandjs uses the pairing-based library [kyberJS](https://github.com/dedis/cothority/tree/master/external/js/kyber) from dedis to perform the verification locally.
+drandjs is a Javascript library able to communicate with a public [drand](https://github.com/drand/drand) network. drandjs can fetch *public* randomness from a node or a group of nodes and verify it in the browser. drandjs uses the pairing-based library [kyberJS](https://github.com/dedis/cothority/tree/master/external/js/kyber) from dedis to perform the verification locally.
 
 **NOTE**: This software was created under the supervision of [dedis](https://github.com/dedis) lab. It is considered experimental and has NOT received a third-party audit yet. Therefore, DO NOT USE it in production or for anything security critical at this point.
 
 ## Installation
 
 The simplest way to use drandjs is to import the script from *jsdelivr* as in the following:
+
 ```javascript
-<script src="https://cdn.jsdelivr.net/gh/drand/drandjs@1.0.7/dist/drandjs.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/drand/drandjs/dist/drandjs.js"></script>
 ```
 
-**Compile from source**: To compile the sources into a single bundled Javascript file, you can run `make compile` to create the file `dist/drand.js` ready to be included in your application.
+**Compile from source**: To compile the sources into a single bundled Javascript file, you can run `make compile` to create the file `dist/drandjs.js` ready to be included in your application.
 
 ## Usage
 
 The following is a Javascript snippet showing the shortest way to get fresh verified randomness from a running `drand` network:
+
 ```javascript
 // the identity of the node we want to contact
 var identity = {
@@ -42,7 +44,7 @@ fetchAndVerify(identity, defaultDistKey, latestRound)
 
 There are three important pieces of information to provide to drandjs:
 
--  **Identity**: It holds all required information to contact a `drand` node. The *Address* is the IP address or DNS name of the `drand` node the user wishes to contact. *TLS* is true if drandjs should contact this node over HTTPS (`drand` nodes by default are using HTTPS) and false if the node does not have a TLS certificate. One can retrieve the identity of `drand` nodes from the group configuration file of the network. See [`drand`](https://github.com/dedis/drand) for more information.
+-  **Identity**: It holds all required information to contact a `drand` node. The *Address* is the IP address or DNS name of the `drand` node the user wishes to contact. *TLS* is true if drandjs should contact this node over HTTPS (`drand` nodes by default are using HTTPS) and false if the node does not have a TLS certificate. One can retrieve the identity of `drand` nodes from the group configuration file of the network. See [`drand`](https://github.com/drand/drand) for more information.
 
 -  **Distributed Key**: It holds the distributed public key created during the setup phase of a `drand` network. The key must be in hexadecimal format and should be given out-of-bands (it can be obtained from the group configuration file or fetched from a `drand` node operator. If the key is not available, `fetchAndVerify` allows to give the value `defaultDistKey` in place of the `dist_key` argument, in which case, drandjs fetches the distributed key from the server *as well as* the randomness. However, in this mode of operation, the server **can lie** about the distributed key and thus create any valid *randomness* it wants.
 

@@ -2,7 +2,8 @@
   "name": "drandjs",
   "version": "1.0.7",
   "description": "Javascript library to interact with drand nodes",
-  "main": "drand.js",
+  "main": "src/drand.js",
+  "browser": "dist/drandjs.js",
   "directories": {
     "example": "example"
   },
@@ -25,7 +26,8 @@
   },
   "homepage": "https://github.com/drand/drandjs#readme",
   "dependencies": {
-    "@nikkolasg/noble-bls12-381": "^0.2.8"
+    "@nikkolasg/noble-bls12-381": "^0.2.8",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
     "browserify": "^16.5.0",
