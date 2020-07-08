@@ -1,6 +1,6 @@
 {
   "name": "drandjs",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Javascript library to interact with drand nodes",
   "main": "drand.js",
   "directories": {
