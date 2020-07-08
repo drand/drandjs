@@ -1,3 +1,9 @@
+# ⚠️ DEPRECATED
+
+This client library has been deprecated.
+
+You can now get your randomness in the browser with the new client library: [github.com/drand/drand-client](https://github.com/drand/drand-client).
+
 # drandjs
 
 drandjs is a Javascript library able to communicate with a public [`drand`](https://github.com/dedis/drand) network. drandjs can fetch *public* randomness from a node or a group of nodes and verify it in the browser. drandjs uses the pairing-based library [kyberJS](https://github.com/dedis/cothority/tree/master/external/js/kyber) from dedis to perform the verification locally.
